@@ -6,22 +6,79 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/ https://html2canvas.hertzen.com/;" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     .btn-pos{
-      position: absolute;
-      bottom: 10px;
-      left: 45%;
+      position: fixed;
+      bottom: 20px;
+      right: 10px;
+      -webkit-app-region: no-drag;
+    }
+    html {
+      background: linear-gradient(to right, rgba(255, 69, 0, 0.2), rgba(255, 165, 0, 0.2));
+      -webkit-app-region: drag;
+      height: 100%;
+    }
+    body{
+      background: transparent;
+    }
+    .display-text{
+      -webkit-app-region: no-drag;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0px -0.75px 0 #000, 0px -0.75px 0 #000, 0px 0.75px 0 #000, 0px 0.75px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px -0.75px 0 #000, 0.75px -0.75px 0 #000, -0.75px 0.75px 0 #000, 0.75px 0.75px 0 #000, -0.75px 2.25px 0 #000, 0px 2.25px 0 #000, 0.7px 2.25px 0 #000, 0 2.375px 0.125px rgba(0, 0, 0, .1), 0 0 0.75px rgba(0, 0, 0, .1), 0 0.75px 0.375px rgba(0, 0, 0, .3), 0 1.5px 0.75px rgba(0, 0, 0, .2), 0 2.25px 2.25px rgba(0, 0, 0, .25), 0 3px 3px rgba(0, 0, 0, .2), 0 4.5px 4.5px rgba(0, 0, 0, .15);
+    }
+    .title-text{
+      color: white;
+      font-weight: bold;
+      text-shadow: 0px -0.75px 0 #000, 0px -0.75px 0 #000, 0px 0.75px 0 #000, 0px 0.75px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px -0.75px 0 #000, 0.75px -0.75px 0 #000, -0.75px 0.75px 0 #000, 0.75px 0.75px 0 #000, -0.75px 2.25px 0 #000, 0px 2.25px 0 #000, 0.7px 2.25px 0 #000, 0 2.375px 0.125px rgba(0, 0, 0, .1), 0 0 0.75px rgba(0, 0, 0, .1), 0 0.75px 0.375px rgba(0, 0, 0, .3), 0 1.5px 0.75px rgba(0, 0, 0, .2), 0 2.25px 2.25px rgba(0, 0, 0, .25), 0 3px 3px rgba(0, 0, 0, .2), 0 4.5px 4.5px rgba(0, 0, 0, .15);
+    }
+    .the-spinner{
+      height: 25px;
+      width: 25px;
+      margin-left: 5px;
+    }
+    .nav {
+      height: 35px;
+      background-color: rgb(80, 13, 13);
+      color:white;
+    }
+    .navBtn{
+      background-color: transparent;
+      border: none;
+      color: white;
+      font-size: 20px;
+      margin: 5px;
+      -webkit-app-region: no-drag;
     }
   </style>
 </head>
-<body class="container" style="height: 100%">
-  <div class="translated-content">
-    test
+<body style="height: 100%;">
+  <div class="nav d-flex">
+    <div class="me-auto align-self-center ps-2 title-text">On-Screen Translator</div>
+    <div style="text-align: right;">
+      <button type="button" class="navBtn" style="font-size:15px" onclick="minimizePage()"><i class="fa-solid fa-window-minimize"></i></button>
+      <button type="button" class="navBtn" onclick="closePage()"><i class="fa-solid fa-xmark"></i></button>
+    </div>    
   </div>
-
-  <div class="btn-pos">
-    <button class="btn btn-success" id="translate">text</button>
+  <div class="container pt-2">
+    <div class="d-flex flex-column">
+      <div id="translated-content" class="translated-content display-text">
+        Welcome !
+      </div>
+      <div id="hiragana" class="hiragana pt-2 display-text">
+        こんにちわ！
+      </div>
+      <div id="text-from-image" class="text-from-image pt-2 display-text">
+        今日は！
+      </div>
+    
+    </div>
+    <button class="btn btn-primary pt-2 btn-pos d-flex align-items-center" id="translate">Translate
+      <div class="spinner-border text-danger the-spinner" id="spinner" role="status" hidden>
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </button>
   </div>
 </body>
 
@@ -29,8 +86,28 @@
 <script>
   document.getElementById("translate").addEventListener("click", translate);
 
-  function translate(){
-    window.electron.sendScreenshotSignal();
+  async function translate(){
+    // disable button and show spinner
+    document.getElementById("translate").disabled = true;
+    document.getElementById("spinner").hidden = false;
+    const result = await window.electron.sendScreenshotSignal();
+    console.log(result);
+    if(result.status !== 200) return;
+    document.getElementById('translated-content').innerHTML = result.data.translatedText;
+    document.getElementById('hiragana').innerHTML = result.data.hiragana;
+    document.getElementById('text-from-image').innerHTML = result.data.text;
+
+    // enable button and hide spinner
+    document.getElementById("translate").disabled = false;
+    document.getElementById("spinner").hidden = true;
+  }
+
+  function closePage(){
+    window.close();
+  }
+
+  function minimizePage(){
+    window.electron.minimizePage();
   }
   
 </script>
