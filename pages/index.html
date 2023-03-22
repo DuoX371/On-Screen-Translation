@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/ https://html2canvas.hertzen.com/;" />
+
+  <style>
+    html {
+      /* width: 95%; */
+      height: 95%;
+      overflow: hidden;
+      border: 3px solid yellow;
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 100%;
+      height: 100%;
+      -webkit-app-region: drag;
+      background-image: linear-gradient(rgba(0, 0, 0, 0), purple)
+    }
+  </style>
+</head>
+<body>
+  
+</body>
+<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+  document.addEventListener("screenshot", async (e) => {
+    const img = await html2canvas(document.querySelector("body"))
+    const dataUrl = img.toDataURL('image/png')
+    console.log(dataUrl)
+  })
+  
+</script>
+</html>

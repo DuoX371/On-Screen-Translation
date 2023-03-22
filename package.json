@@ -1,0 +1,19 @@
+{
+  "name": "on-screen-translation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "run": "nodemon --watch . --exec electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.11.0",
+    "electron": "^23.1.4",
+    "fs": "^0.0.1-security",
+    "screenshot-desktop": "^0.0.0-development"
+  }
+}
