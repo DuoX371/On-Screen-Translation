@@ -8,6 +8,8 @@ const kanjiToHiragana = require('./js/kToH.js')
 const translate = require('./js/sugoi-translator.js')
 const deepLTranslate = require('./js/deepL.js')
 
+// Load the config file
+const config = require('./config.js')
 
 let screenWindow = null, translateWindow = null
 async function createWindow () {
@@ -32,11 +34,13 @@ async function createTranslatePage(){
     frame: false,
     resizable: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload/translate.js')
+      preload: path.join(__dirname, 'preload/translate.js'),
+      additionalArguments: [JSON.stringify(config)]
     }
   })
 
-  translateWindow.loadFile('pages/translate.html')
+  await translateWindow.loadFile('pages/translate.html')
+  // translateWindow.webContents.send('config', config)
 }
 
 app.on('ready', async () => {
@@ -48,6 +52,7 @@ app.on('ready', async () => {
   translateWindow.on('closed', () => app.quit())
 
   screenWindow.on('restore', () => translateWindow.show())
+  
 })
 
 app.on('window-all-closed', () => {
@@ -78,3 +83,5 @@ ipcMain.handle('screenshot', async (event, arg) => {
 })
 
 ipcMain.on('openURL', (event, arg) => shell.openExternal(arg))
+ipcMain.on('updateLanguage', (event, arg) => {config.translate = arg})
+

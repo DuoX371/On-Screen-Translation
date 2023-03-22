@@ -64,6 +64,7 @@
 <body style="height: 100%;">
   <div class="nav d-flex align-items-center">
     <div class="me-auto align-self-center ps-2 title-text">On-Screen Translator</div>
+    <button type="button" class="navBtn" onclick="selectLanguage()"><i class="fa-solid fa-gear"></i></button>
     <button type="button" class="navBtn" style="font-size:15px" onclick="minimizePage()"><i class="fa-solid fa-window-minimize"></i></button>
     <button type="button" class="navBtn" onclick="showInfo()"><i class="fa-solid fa-circle-info"></i></button>
     <button type="button" class="navBtn" style="margin-right: 5px; font-size: 15px;" onclick="closePage()"><i class="fa-solid fa-xmark"></i></button>   
@@ -89,7 +90,6 @@
   </div>
 </body>
 
-<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
   document.getElementById("translate").addEventListener("click", translate);
 
@@ -120,7 +120,7 @@
   function showInfo(){
     Swal.fire({
       title: 'Info',
-      html: '	&#169; 2023<br><div style="text-align:left">'
+      html: '&#169; 2023<br><div style="text-align:left"><strong>Developers</strong><br><br>'
       + '<img src="https://avatars.githubusercontent.com/u/62107810?v=4" width="40px"> <a href="#" onclick="openLink(1)">DuoX371</a><br>'
       + '<img src="https://avatars.githubusercontent.com/u/15123020?v=4" width="40px"> <a href="#" onclick="openLink(2)">Yewon Kim</a></div>'
     })
@@ -133,6 +133,58 @@
     }
     // Use electron shell to open link
     window.electron.openLink(links[url])
+  }
+
+  let cacheLang = localStorage.getItem('language')
+
+  // Select config.js
+  let current = cacheLang ? JSON.parse(cacheLang) : JSON.parse(JSON.stringify(config.translate))
+  let languagesFrom = JSON.parse(JSON.stringify(config.languages))
+  let languagesTo = JSON.parse(JSON.stringify(config.languages))
+  delete languagesFrom[current.to]
+  delete languagesTo[current.from]
+
+  function selectLanguage(){
+    let tempTrans = JSON.parse(JSON.stringify(current))
+    // Show language selection
+    Swal.fire({
+      title: 'Select Language',
+      html: `<select id="from" onchange="updateTo()">${getSelectedFrom()}</select> -> 
+      <select id="to" onchange="updateFrom()">${getSelectedTo()}</select>`,
+      showCancelButton: true,
+    }).then(res => {
+      if(!res.isConfirmed) return current = tempTrans
+      document.getElementById('hiragana').hidden = current.from === 'ja' ? false : true
+      localStorage.setItem('language', JSON.stringify(current))
+      // Update current language default
+      window.electron.updateLanguage(current)
+    })
+  }
+
+  function getSelectedFrom(){
+    return Object.keys(languagesFrom).map((key) => {return `<option value="${key}" ${current.from === key ? 'selected': ''}>${languagesFrom[key]}</option>`}).join('')
+  }
+
+  function getSelectedTo(){
+    return Object.keys(languagesTo).map((key) => {return `<option value="${key}" ${current.to === key ? 'selected': ''}>${languagesTo[key]}</option>`}).join('')
+  }
+
+  function updateTo(){
+    const selected = document.getElementById('from').value
+    // If the from is japanese, show hiragana div else hide it
+    languagesTo = JSON.parse(JSON.stringify(config.languages))
+    delete languagesTo[selected]
+    current.from = selected
+    document.getElementById('to').innerHTML = getSelectedTo()
+  }
+  
+  // When user select the language to translate to, remove the language from the from list
+  function updateFrom(){
+    const selected = document.getElementById('to').value
+    languagesFrom = JSON.parse(JSON.stringify(config.languages)) // Reset languagesFrom
+    delete languagesFrom[selected]
+    current.to = selected
+    document.getElementById('from').innerHTML = getSelectedFrom()
   }
   
 </script>
