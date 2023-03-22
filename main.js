@@ -1,4 +1,4 @@
-const { app, BrowserWindow, screen, ipcMain, desktopCapturer  } = require('electron')
+const { app, BrowserWindow, screen, ipcMain, desktopCapturer, shell  } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -40,11 +40,14 @@ async function createTranslatePage(){
 }
 
 app.on('ready', async () => {
-  await createWindow()
   await createTranslatePage()
+  await createWindow()
+
   // Close the app when any of the windows are closed
   screenWindow.on('closed', () => app.quit())
   translateWindow.on('closed', () => app.quit())
+
+  screenWindow.on('restore', () => translateWindow.show())
 })
 
 app.on('window-all-closed', () => {
@@ -73,3 +76,5 @@ ipcMain.handle('screenshot', async (event, arg) => {
   console.log('Hiragana: ' + hiragana)
   return {status: 200, data: {text, hiragana: hiragana ? hiragana : false, translatedText: translatedText ? translatedText : false}}
 })
+
+ipcMain.on('openURL', (event, arg) => shell.openExternal(arg))
