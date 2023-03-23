@@ -43,6 +43,8 @@
       height: 35px;
       background-color: rgb(80, 13, 13);
       color:white;
+      position: fixed;
+      width: 100%;
     }
     .navBtn{
       background-color: transparent;
@@ -59,17 +61,25 @@
     .swal2-container{
       -webkit-app-region: no-drag;
     }
+    .trans-info{
+      font-size: 0.8em;
+      padding-left: 10px;
+    }
+    .container{
+      padding-top: 2.5em
+    }
   </style>
 </head>
 <body style="height: 100%;">
   <div class="nav d-flex align-items-center">
-    <div class="me-auto align-self-center ps-2 title-text">On-Screen Translator</div>
-    <button type="button" class="navBtn" onclick="selectLanguage()"><i class="fa-solid fa-gear"></i></button>
+    <div class="align-self-center ps-2 title-text">On-Screen Translator V1.0</div>
+    <div class="trans-info" id="current-trans"></div>
+    <button type="button" class="ms-auto navBtn" onclick="selectLanguage()"><i class="fa-solid fa-gear"></i></button>
     <button type="button" class="navBtn" style="font-size:15px" onclick="minimizePage()"><i class="fa-solid fa-window-minimize"></i></button>
     <button type="button" class="navBtn" onclick="showInfo()"><i class="fa-solid fa-circle-info"></i></button>
     <button type="button" class="navBtn" style="margin-right: 5px; font-size: 15px;" onclick="closePage()"><i class="fa-solid fa-xmark"></i></button>   
   </div>
-  <div class="container pt-2">
+  <div class="container">
     <div class="d-flex flex-column">
       <div id="translated-content" class="translated-content display-text">
         Welcome !
@@ -158,6 +168,8 @@
   function showInfo(){
     Swal.fire({
       title: 'Info',
+      showCancelButton: false,
+      showConfirmButton: false,
       html: '&#169; 2023<br><div style="text-align:left"><strong>Developers</strong><br><br>'
       + '<img src="https://avatars.githubusercontent.com/u/62107810?v=4" width="40px"> <a href="#" onclick="openLink(1)">DuoX371</a><br>'
       + '<img src="https://avatars.githubusercontent.com/u/15123020?v=4" width="40px"> <a href="#" onclick="openLink(2)">Yewon Kim</a></div>'
@@ -177,66 +189,78 @@
 
   // Select config.js
   let current = cacheLang ? JSON.parse(cacheLang) : JSON.parse(JSON.stringify(config.translate))
-  let languagesFrom = JSON.parse(JSON.stringify(config.languages))
-  let languagesTo = JSON.parse(JSON.stringify(config.languages))
-  delete languagesFrom[current.to]
-  delete languagesTo[current.from]
+  let languages = JSON.parse(JSON.stringify(config.languages))
 
+  // Update current translate language
+  document.getElementById('current-trans').innerHTML = `${languages[current.from]} -> ${languages[current.to]}`
+
+  let initialFrom, initialTo;
   function selectLanguage(){
     let tempTrans = JSON.parse(JSON.stringify(current))
     // Show language selection
     Swal.fire({
       title: 'Select Language',
-      html: `<select id="from" onchange="updateTo()">${getSelectedFrom()}</select> -> 
-      <select id="to" onchange="updateFrom()">${getSelectedTo()}</select>`,
+      html: `<select id="from" onchange="updateTo()" onclick="initBoth()">${getSelected(1)}</select> -> 
+      <select id="to" onchange="updateFrom()" onclick="initBoth()">${getSelected(2)}</select>`,
       showCancelButton: true,
     }).then(res => {
       if(!res.isConfirmed) return current = tempTrans
-      document.getElementById('hiragana').hidden = current.from === 'ja' ? false : true
+      document.getElementById('current-trans').innerHTML = `${languages[current.from]} -> ${languages[current.to]}`
       localStorage.setItem('language', JSON.stringify(current))
       // Update current language default
       window.electron.updateLanguage(current)
     })
+    initialFrom = document.getElementById('from').value
+    initialTo = document.getElementById('to').value
   }
 
-  function getSelectedFrom(){
-    return Object.keys(languagesFrom).map((key) => {return `<option value="${key}" ${current.from === key ? 'selected': ''}>${languagesFrom[key]}</option>`}).join('')
+  function getSelected(e){
+    const d = e === 1 ? current.from : current.to
+    return Object.keys(languages).map((key) => {return `<option value="${key}" ${d === key ? 'selected': ''}>${languages[key]}</option>`}).join('')
   }
 
-  function getSelectedTo(){
-    return Object.keys(languagesTo).map((key) => {return `<option value="${key}" ${current.to === key ? 'selected': ''}>${languagesTo[key]}</option>`}).join('')
+  function initBoth(){
+    initialFrom = document.getElementById('from').value
+    initialTo = document.getElementById('to').value
   }
 
+  // This is when user select the language to translate from
   function updateTo(){
     const selected = document.getElementById('from').value
-    // If the from is japanese, show hiragana div else hide it
-    languagesTo = JSON.parse(JSON.stringify(config.languages))
-    delete languagesTo[selected]
+    if(selected === initialTo) {
+      document.getElementById('to').value = initialFrom
+    }
     current.from = selected
-    document.getElementById('to').innerHTML = getSelectedTo()
+    current.to = document.getElementById('to').value
   }
   
   // When user select the language to translate to, remove the language from the from list
   function updateFrom(){
     const selected = document.getElementById('to').value
-    languagesFrom = JSON.parse(JSON.stringify(config.languages)) // Reset languagesFrom
-    delete languagesFrom[selected]
+    if(selected === initialFrom) {
+      document.getElementById('from').value = initialTo
+    }
     current.to = selected
-    document.getElementById('from').innerHTML = getSelectedFrom()
+    current.from = document.getElementById('from').value
   }
 
+  // Translate the text on click
   async function translate(){
     // disable button and show spinner
     document.getElementById("translate").disabled = true;
     document.getElementById("spinner").hidden = false;
-    const result = await takeScreenshot();
+    const result = await takeScreenshot().catch(err => {return {status: 500, data: {error: 'An error occured'}}})
     // const result = await window.electron.sendScreenshotSignal();
     console.log(result);
-    if(result.status !== 200) return;
-    document.getElementById('translated-content').innerHTML = result.data.translatedText;
-    // document.getElementById('hiragana').innerHTML = result.data.f;
-    document.getElementById('text-from-image').innerHTML = current.from === 'ja' ? result.data.furigana : result.data.text
-
+    if(result.status === 200){
+      document.getElementById('translated-content').innerHTML = result.data.translatedText;
+      // document.getElementById('hiragana').innerHTML = result.data.f;
+      document.getElementById('text-from-image').innerHTML = current.from === 'ja' ? result.data.furigana : result.data.text
+    }else {
+      document.getElementById('translated-content').innerHTML = result.data.error
+      document.getElementById('text-from-image').innerHTML = ''
+    }
+    
     // enable button and hide spinner
     document.getElementById("translate").disabled = false;
     document.getElementById("spinner").hidden = true;

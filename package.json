@@ -12,12 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "electron": "^23.1.4",
+    "electron-store": "^8.1.0",
     "fs": "^0.0.1-security",
     "kuroshiro": "^1.1.2",
     "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "node-fetch": "^2.6.9",
     "puppeteer": "^19.7.5",
-    "tesseract.js": "^4.0.2"
+    "tesseract.js": "^4.0.2",
+    "update-electron-app": "^2.0.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"

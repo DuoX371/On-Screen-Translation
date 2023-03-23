@@ -3,6 +3,13 @@ module.exports = {
     from: 'ja',
     to: 'en'
   },
+  ocrServer: {
+    selected: 0,
+    serverList: {
+      0: 'https://tomofi-easyocr.hf.space/api/predict/',
+      1: 'https://api.yewonkim.tk/ocr/'
+    }
+  },
   languages: {
     'bg': 'Bulgarian',
     'zh': 'Chinese',

@@ -1,17 +1,16 @@
 const fetch = require('node-fetch')
-const ocrServer = ['https://tomofi-easyocr.hf.space/api/predict/', 'https://api.yewonkim.tk/ocr/']
 const config = require('../config.js')
 
 async function easyOCR(img) {
-  // const server = ocrServer[Math.floor(Math.random() * ocrServer.length)]
-  const server = ocrServer[1]
+  const serverI = config.ocrServer.selected
+  const server = config.ocrServer.serverList[serverI]
   const lang = config.translate.from
   let data
   if (server.includes('tomofi-easyocr')) {
     data = JSON.stringify({
       data: [
         img,
-        [lang]
+        [lang, 'en']
       ]
     })
   } else if (server.includes('api.yewonkim.tk')) {
@@ -34,7 +33,7 @@ async function easyOCR(img) {
 
   if (!res) return
 
-  return res
+  return {res, serverI}
 }
 
 module.exports = easyOCR
