@@ -1,6 +1,5 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-
 contextBridge.exposeInMainWorld('electron', {
   test: () => ipcRenderer.send('test'),
 })

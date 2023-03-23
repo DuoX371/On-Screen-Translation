@@ -2,5 +2,6 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 
 contextBridge.exposeInMainWorld('electron', {
-  sendScreenshotSignal: () => ipcRenderer.send('screenshot'),
+  sendScreenshotSignal: () => ipcRenderer.invoke('screenshot'),
+  sendImageToText: (arg) => ipcRenderer.invoke('imageToText', arg)
 })
