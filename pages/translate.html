@@ -6,59 +6,122 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net/ https://html2canvas.hertzen.com/;" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha512-xh6O/CkQoPOWDdYTDqeRdPCVd1SpvCA9XXcUnZS2FmJNp1coAFzvtCN9BmamE+4aHK8yyUHUSCcJHgXloTyT2A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .btn-pos{
-      position: absolute;
-      bottom: 10px;
-      left: 45%;
+      position: fixed;
+      bottom: 20px;
+      right: 10px;
+      -webkit-app-region: no-drag;
+    }
+    html {
+      background: linear-gradient(to right, rgba(255, 69, 0, 0.2), rgba(255, 165, 0, 0.2));
+      -webkit-app-region: drag;
+      height: 100%;
+    }
+    body{
+      background: transparent;
+    }
+    .display-text{
+      -webkit-app-region: no-drag;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0px -0.75px 0 #000, 0px -0.75px 0 #000, 0px 0.75px 0 #000, 0px 0.75px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px -0.75px 0 #000, 0.75px -0.75px 0 #000, -0.75px 0.75px 0 #000, 0.75px 0.75px 0 #000, -0.75px 2.25px 0 #000, 0px 2.25px 0 #000, 0.7px 2.25px 0 #000, 0 2.375px 0.125px rgba(0, 0, 0, .1), 0 0 0.75px rgba(0, 0, 0, .1), 0 0.75px 0.375px rgba(0, 0, 0, .3), 0 1.5px 0.75px rgba(0, 0, 0, .2), 0 2.25px 2.25px rgba(0, 0, 0, .25), 0 3px 3px rgba(0, 0, 0, .2), 0 4.5px 4.5px rgba(0, 0, 0, .15);
+    }
+    .title-text{
+      color: white;
+      font-weight: bold;
+      text-shadow: 0px -0.75px 0 #000, 0px -0.75px 0 #000, 0px 0.75px 0 #000, 0px 0.75px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px 0px 0 #000, 0.75px 0px 0 #000, -0.75px -0.75px 0 #000, 0.75px -0.75px 0 #000, -0.75px 0.75px 0 #000, 0.75px 0.75px 0 #000, -0.75px 2.25px 0 #000, 0px 2.25px 0 #000, 0.7px 2.25px 0 #000, 0 2.375px 0.125px rgba(0, 0, 0, .1), 0 0 0.75px rgba(0, 0, 0, .1), 0 0.75px 0.375px rgba(0, 0, 0, .3), 0 1.5px 0.75px rgba(0, 0, 0, .2), 0 2.25px 2.25px rgba(0, 0, 0, .25), 0 3px 3px rgba(0, 0, 0, .2), 0 4.5px 4.5px rgba(0, 0, 0, .15);
+    }
+    .the-spinner{
+      height: 25px;
+      width: 25px;
+      margin-left: 5px;
+    }
+    .nav {
+      height: 35px;
+      background-color: rgb(80, 13, 13);
+      color:white;
+    }
+    .navBtn{
+      background-color: transparent;
+      border: none;
+      color: white;
+      font-size: 15px;
+      -webkit-app-region: no-drag;
+    }
+    /* navBtn on hover darken the color */
+    .navBtn:hover {
+      background-color: rgb(59, 9, 9);
+      color: white;
+    }
+    .swal2-container{
+      -webkit-app-region: no-drag;
     }
   </style>
 </head>
-<body class="container" style="height: 100%">
-  <div class="translated-content">
-    test
+<body style="height: 100%;">
+  <div class="nav d-flex align-items-center">
+    <div class="me-auto align-self-center ps-2 title-text">On-Screen Translator</div>
+    <button type="button" class="navBtn" onclick="selectLanguage()"><i class="fa-solid fa-gear"></i></button>
+    <button type="button" class="navBtn" style="font-size:15px" onclick="minimizePage()"><i class="fa-solid fa-window-minimize"></i></button>
+    <button type="button" class="navBtn" onclick="showInfo()"><i class="fa-solid fa-circle-info"></i></button>
+    <button type="button" class="navBtn" style="margin-right: 5px; font-size: 15px;" onclick="closePage()"><i class="fa-solid fa-xmark"></i></button>   
   </div>
-  <video id="video" autoplay class="d-none"></video>
-
-  <div class="btn-pos">
-    <button class="btn btn-success" id="translate">text</button>
+  <div class="container pt-2">
+    <div class="d-flex flex-column">
+      <div id="translated-content" class="translated-content display-text">
+        Welcome !
+      </div>
+      <div id="hiragana" class="hiragana pt-2 display-text">
+        こんにちわ！
+      </div>
+      <div id="text-from-image" class="text-from-image pt-2 display-text">
+        今日は！
+      </div>
+    
+    </div>
+    <button class="btn btn-primary pt-2 btn-pos d-flex align-items-center" id="translate">Translate
+      <div class="spinner-border text-danger the-spinner" id="spinner" role="status" hidden>
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </button>
+    <video id="video" autoplay class="d-none"></video>
   </div>
 </body>
 
-<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
   document.getElementById("translate").addEventListener("click", translate);
-
   const videoElem = document.getElementById("video");
-  let selectedSource = {}
+    let selectedSource = {}
 
-  navigator.mediaDevices.getDisplayMedia = async () => {
-    // create MediaStream
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        mandatory: {
-          chromeMediaSource: "screen",
-          chromeMediaSourceId: selectedSource.id,
-          minWidth: selectedSource.bounds.width,
-          maxWidth: selectedSource.bounds.width,
-          minHeight: selectedSource.bounds.height,
-          maxHeight: selectedSource.bounds.height,
+    navigator.mediaDevices.getDisplayMedia = async () => {
+      // create MediaStream
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          mandatory: {
+            chromeMediaSource: "screen",
+            chromeMediaSourceId: selectedSource.id,
+            minWidth: selectedSource.bounds.width,
+            maxWidth: selectedSource.bounds.width,
+            minHeight: selectedSource.bounds.height,
+            maxHeight: selectedSource.bounds.height,
+          },
         },
-      },
-    });
+      });
 
     return stream;
   };
 
-  async function translate(){
+  async function takeScreenshot() {
     // get capture window id and sizes
-    const ss = await window.electron.sendScreenshotSignal();
+    const ss = await window.electron.getCaptureWindow();
     selectedSource = ss;
 
     // Start streaming the video feedbck to the video element
-    videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia();  
+    videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia();
 
     // Create canvas to convert the stremed video to image
     let canvas = document.createElement("canvas");
@@ -69,19 +132,113 @@
     // Wait for the video to initialize. then draw the image to canvas
     setTimeout(async () => {
       context.drawImage(video, 0, 0, ss.bounds.width, ss.bounds.height);
-    
+
       // Stop the streaming since we already captured the video
       let tracks = videoElem.srcObject.getTracks();
       tracks.forEach((track) => track.stop());
 
       console.log(canvas.toDataURL()); // Image in base64 >> can process to image to text
-      
-      const res = await window.electron.sendImageToText({ 
+
+      const res = await window.electron.sendImageToText({
         img: canvas.toDataURL(),
         // lang: 'jpn' // (optional)
       })
       console.log(res)
     }, 500)
+  }
+
+  async function translate(){
+    // disable button and show spinner
+    document.getElementById("translate").disabled = true;
+    document.getElementById("spinner").hidden = false;
+    const result = await window.electron.sendScreenshotSignal();
+    console.log(result);
+    if(result.status !== 200) return;
+    document.getElementById('translated-content').innerHTML = result.data.translatedText;
+    document.getElementById('hiragana').innerHTML = result.data.hiragana;
+    document.getElementById('text-from-image').innerHTML = result.data.text;
+
+    // enable button and hide spinner
+    document.getElementById("translate").disabled = false;
+    document.getElementById("spinner").hidden = true;
+  }
+
+  function closePage(){
+    window.close();
+  }
+
+  function minimizePage(){
+    window.electron.minimizePage();
+  }
+
+  function showInfo(){
+    Swal.fire({
+      title: 'Info',
+      html: '&#169; 2023<br><div style="text-align:left"><strong>Developers</strong><br><br>'
+      + '<img src="https://avatars.githubusercontent.com/u/62107810?v=4" width="40px"> <a href="#" onclick="openLink(1)">DuoX371</a><br>'
+      + '<img src="https://avatars.githubusercontent.com/u/15123020?v=4" width="40px"> <a href="#" onclick="openLink(2)">Yewon Kim</a></div>'
+    })
+  }
+
+  function openLink(url){
+    const links = {
+      1: 'https://github.com/DuoX371',
+      2: 'https://github.com/SahrulGamerz'
+    }
+    // Use electron shell to open link
+    window.electron.openLink(links[url])
+  }
+
+  let cacheLang = localStorage.getItem('language')
+
+  // Select config.js
+  let current = cacheLang ? JSON.parse(cacheLang) : JSON.parse(JSON.stringify(config.translate))
+  let languagesFrom = JSON.parse(JSON.stringify(config.languages))
+  let languagesTo = JSON.parse(JSON.stringify(config.languages))
+  delete languagesFrom[current.to]
+  delete languagesTo[current.from]
+
+  function selectLanguage(){
+    let tempTrans = JSON.parse(JSON.stringify(current))
+    // Show language selection
+    Swal.fire({
+      title: 'Select Language',
+      html: `<select id="from" onchange="updateTo()">${getSelectedFrom()}</select> -> 
+      <select id="to" onchange="updateFrom()">${getSelectedTo()}</select>`,
+      showCancelButton: true,
+    }).then(res => {
+      if(!res.isConfirmed) return current = tempTrans
+      document.getElementById('hiragana').hidden = current.from === 'ja' ? false : true
+      localStorage.setItem('language', JSON.stringify(current))
+      // Update current language default
+      window.electron.updateLanguage(current)
+    })
+  }
+
+  function getSelectedFrom(){
+    return Object.keys(languagesFrom).map((key) => {return `<option value="${key}" ${current.from === key ? 'selected': ''}>${languagesFrom[key]}</option>`}).join('')
+  }
+
+  function getSelectedTo(){
+    return Object.keys(languagesTo).map((key) => {return `<option value="${key}" ${current.to === key ? 'selected': ''}>${languagesTo[key]}</option>`}).join('')
+  }
+
+  function updateTo(){
+    const selected = document.getElementById('from').value
+    // If the from is japanese, show hiragana div else hide it
+    languagesTo = JSON.parse(JSON.stringify(config.languages))
+    delete languagesTo[selected]
+    current.from = selected
+    document.getElementById('to').innerHTML = getSelectedTo()
+  }
+  
+  // When user select the language to translate to, remove the language from the from list
+  function updateFrom(){
+    const selected = document.getElementById('to').value
+    languagesFrom = JSON.parse(JSON.stringify(config.languages)) // Reset languagesFrom
+    delete languagesFrom[selected]
+    current.to = selected
+    document.getElementById('from').innerHTML = getSelectedFrom()
   }
   
 </script>

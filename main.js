@@ -1,14 +1,21 @@
-const { app, BrowserWindow, screen, ipcMain, desktopCapturer } = require('electron')
+const { app, BrowserWindow, screen, ipcMain, desktopCapturer, shell } = require('electron')
 const path = require('path')
 const fs = require('fs')
-const screenshot = require('screenshot-desktop')
-const tesseract = require('tesseract.js')
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const fetch = require('node-fetch')
+
+// Tesseract and Bing Translate API
+const imageToText = require('./js/tesseract.js')
+const kanjiToHiragana = require('./js/kToH.js')
+const translate = require('./js/sugoi-translator.js')
+const deepLTranslate = require('./js/deepL.js')
+
+// Load the config file
+const config = require('./config.js')
 
 const ocrServer = ['https://tomofi-easyocr.hf.space/api/predict/', 'https://api.yewonkim.tk/ocr/']
 
 let screenWindow = null, translateWindow = null
-function createWindow() {
+async function createWindow() {
   screenWindow = new BrowserWindow({
     width: 600,
     height: 150,
@@ -20,28 +27,37 @@ function createWindow() {
       preload: path.join(__dirname, 'preload/main.js')
     }
   })
-
   screenWindow.loadFile('pages/index.html')
 }
 
-function createTranslatePage() {
+async function createTranslatePage() {
   translateWindow = new BrowserWindow({
-    width: 400,
-    height: 250,
-    transparent: false,
-    frame: true,
+    width: 600,
+    height: 350,
+    transparent: true,
+    frame: false,
+    resizable: true,
     title: 'OST Main Window',
     webPreferences: {
-      preload: path.join(__dirname, 'preload/translate.js')
+      preload: path.join(__dirname, 'preload/translate.js'),
+      additionalArguments: [JSON.stringify(config)]
     }
   })
 
-  translateWindow.loadFile('pages/translate.html')
+  await translateWindow.loadFile('pages/translate.html')
+  // translateWindow.webContents.send('config', config)
 }
 
-app.on('ready', () => {
-  createWindow()
-  createTranslatePage()
+app.on('ready', async () => {
+  await createTranslatePage()
+  await createWindow()
+
+  // Close the app when any of the windows are closed
+  screenWindow.on('closed', () => app.quit())
+  translateWindow.on('closed', () => app.quit())
+
+  screenWindow.on('restore', () => translateWindow.show())
+
 })
 
 app.on('window-all-closed', () => {
@@ -51,7 +67,7 @@ app.on('window-all-closed', () => {
 })
 
 // All other invoke functions
-ipcMain.handle('screenshot', async (event, arg) => {
+ipcMain.handle('getCaptureWindow', async (event, arg) => {
   if (!screenWindow) return;
 
   console.log('Screenshot signal received')
@@ -72,34 +88,6 @@ ipcMain.handle('imageToText', async (event, arg) => {
   return await (arg.lang ? easyOCR(arg.img, arg.lang) : easyOCR(arg.img))
 })
 
-function temp() {
-  // Take a screenshot of screenWindow
-  // const img = (await screenWindow.webContents.capturePage()).toPNG()
-  // console.log(img)
-  // const img = await screenshot({format: 'png'})
-  // let def = 0; // Default display
-  // const displayList = await screenshot.listDisplays()
-  // console.log(displayList)
-  // const img = await screenshot({screen: displayList[def].id, format: 'png'})
-  // fs.writeFileSync('screenshot.png', img)
-
-  // Screenshot a particular window
-  screenWindow.webContents.capturePage().then((img) => {
-    screenWindow.webContents.executeJavaScript(`document.createElement('canvas')`)
-    // const canvas = document.createElement('canvas')
-  })
-
-
-  // fs.writeFileSync('screenshot.png', img)
-  // const imgData = img.toDataURL()
-  // console.log(imgData)
-  //screenWindow.webContents.send('screenshot', 'screenshot')
-}
-
-async function imageToText(img, lang = 'jpn') {
-  const text = await tesseract.recognize(img, lang).catch(err => console.log(err))
-  return text.data.text;
-}
 async function easyOCR(img, lang = 'ja') {
   const server = ocrServer[Math.floor(Math.random() * ocrServer.length)]
   let data
@@ -132,3 +120,27 @@ async function easyOCR(img, lang = 'ja') {
 
   return res
 }
+
+ipcMain.on('minimize', () => {
+  translateWindow.minimize()
+  screenWindow.minimize()
+})
+
+// All other invoke functions
+ipcMain.handle('screenshot', async (event, arg) => {
+  if (!screenWindow) return;
+  console.log('Screenshot signal received')
+  // Retrieve the image and convert it to text
+  const text = await imageToText('https://cdn.discordapp.com/attachments/899577298364280844/1088034319324422214/text.png') //change this once the screenshot function is done
+  console.log('Retrieved text: ' + text)
+  const [hiragana, translatedText] = await Promise.all([
+    await kanjiToHiragana(text).catch(err => { return false }),
+    await deepLTranslate(text).catch(err => { return false })
+  ])
+  console.log('Translated: ' + translatedText)
+  console.log('Hiragana: ' + hiragana)
+  return { status: 200, data: { text, hiragana: hiragana ? hiragana : false, translatedText: translatedText ? translatedText : false } }
+})
+
+ipcMain.on('openURL', (event, arg) => shell.openExternal(arg))
+ipcMain.on('updateLanguage', (event, arg) => { config.translate = arg })

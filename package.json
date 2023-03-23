@@ -11,14 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "canvas": "^2.11.0",
     "electron": "^23.1.4",
     "fs": "^0.0.1-security",
-    "node-fetch": "^3.3.1",
-    "screenshot-desktop": "^0.0.0-development",
+    "node-fetch": "^2.6.9",
+    "puppeteer": "^19.7.5",
     "tesseract.js": "^4.0.2"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.21"
   }
 }

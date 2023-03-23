@@ -26,13 +26,4 @@
 <body>
   
 </body>
-<script type="text/javascript" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-<script>
-  document.addEventListener("screenshot", async (e) => {
-    const img = await html2canvas(document.querySelector("body"))
-    const dataUrl = img.toDataURL('image/png')
-    console.log(dataUrl)
-  })
-  
-</script>
 </html>
