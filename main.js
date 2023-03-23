@@ -6,7 +6,8 @@ const Store = require('electron-store')
 const store = new Store()
 
 // Auto update
-// require('update-electron-app')()
+const { autoUpdater } = require('electron-updater')
+autoUpdater.checkForUpdatesAndNotify()
 
 // Tesseract and Bing Translate API
 // const imageToText = require('./js/tesseract.js')

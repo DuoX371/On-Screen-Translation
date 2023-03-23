@@ -13,13 +13,17 @@
     "productName": "On Screen Translator",
     "icon": "icon.ico",
     "appId": "com.duox371.on-screen-translator",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "duox371",
+        "repo": "On-Screen-Translation"
+      }
+    ],
     "asar": true,
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
-    },
-    "win":{
-      "publisherName": "duox371"
     }
   },
   "author": "",
