@@ -29,6 +29,9 @@ async function createWindow() {
     frame: false,
     resizable: true,
     title: 'Text Capturer Window',
+    webPreferences: {
+      devTools: app.isPackaged ? false : true,
+    }
   })
   screenWindow.loadFile('pages/index.html')
 }
@@ -43,7 +46,8 @@ async function createTranslatePage() {
     title: 'OST Main Window',
     webPreferences: {
       preload: path.join(__dirname, 'preload/translate.js'),
-      additionalArguments: [JSON.stringify(config)]
+      additionalArguments: [JSON.stringify(config)],
+      devTools: app.isPackaged ? false : true,
     }
   })
 

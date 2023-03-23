@@ -1,17 +1,30 @@
 {
-  "name": "on-screen-translation",
+  "name": "on-screen-translator",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "run": "nodemon --watch . --exec electron ."
+    "run": "nodemon --watch . --exec electron .",
+    "build": "electron-builder"
+  },
+  "build": {
+    "productName": "On Screen Translator",
+    "icon": "icon.ico",
+    "appId": "com.duox371.on-screen-translator",
+    "asar": true,
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "win":{
+      "publisherName": "duox371"
+    }
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^23.1.4",
     "electron-store": "^8.1.0",
     "fs": "^0.0.1-security",
     "kuroshiro": "^1.1.2",
@@ -22,6 +35,8 @@
     "update-electron-app": "^2.0.1"
   },
   "devDependencies": {
+    "electron": "^23.1.4",
+    "electron-builder": "^23.6.0",
     "nodemon": "^2.0.22"
   }
 }
