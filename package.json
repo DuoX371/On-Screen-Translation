@@ -13,6 +13,8 @@
   "dependencies": {
     "electron": "^23.1.4",
     "fs": "^0.0.1-security",
+    "kuroshiro": "^1.1.2",
+    "kuroshiro-analyzer-kuromoji": "^1.1.0",
     "node-fetch": "^2.6.9",
     "puppeteer": "^19.7.5",
     "tesseract.js": "^4.0.2"

@@ -16,7 +16,6 @@ async function activatePage(){
 }
 
 async function deepLTranslate(text){
-  console.log(config.translate)
   // Navigate to the page
   await page.goto(`https://www.deepl.com/translator#${config.translate.from}/${config.translate.to}/${encodeURIComponent(text)}`);
   // Wait for the loading indicator to disappear

@@ -74,11 +74,10 @@
       <div id="translated-content" class="translated-content display-text">
         Welcome !
       </div>
-      <div id="hiragana" class="hiragana pt-2 display-text">
+      <!-- <div id="hiragana" class="hiragana pt-2 display-text">
+      </div> -->
+      <div id="text-from-image" class="text-from-image pt-2 display-text" style="font-size:1.2em">
         こんにちわ！
-      </div>
-      <div id="text-from-image" class="text-from-image pt-2 display-text">
-        今日は！
       </div>
     
     </div>
@@ -129,39 +128,24 @@
     canvas.width = ss.bounds.width;
     canvas.height = ss.bounds.height;
 
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+    await delay(500);
     // Wait for the video to initialize. then draw the image to canvas
-    setTimeout(async () => {
-      context.drawImage(video, 0, 0, ss.bounds.width, ss.bounds.height);
+    context.drawImage(video, 0, 0, ss.bounds.width, ss.bounds.height);
 
-      // Stop the streaming since we already captured the video
-      let tracks = videoElem.srcObject.getTracks();
-      tracks.forEach((track) => track.stop());
+    // Stop the streaming since we already captured the video
+    let tracks = videoElem.srcObject.getTracks();
+    tracks.forEach((track) => track.stop());
 
-      console.log(canvas.toDataURL()); // Image in base64 >> can process to image to text
+    console.log(canvas.toDataURL()); // Image in base64 >> can process to image to text
 
-      const res = await window.electron.sendImageToText({
-        img: canvas.toDataURL(),
-        // lang: 'jpn' // (optional)
-      })
-      console.log(res)
-    }, 500)
+    return await window.electron.sendImageToText({
+      img: canvas.toDataURL(),
+      // lang: 'jpn' // (optional)
+    })
   }
 
-  async function translate(){
-    // disable button and show spinner
-    document.getElementById("translate").disabled = true;
-    document.getElementById("spinner").hidden = false;
-    const result = await window.electron.sendScreenshotSignal();
-    console.log(result);
-    if(result.status !== 200) return;
-    document.getElementById('translated-content').innerHTML = result.data.translatedText;
-    document.getElementById('hiragana').innerHTML = result.data.hiragana;
-    document.getElementById('text-from-image').innerHTML = result.data.text;
-
-    // enable button and hide spinner
-    document.getElementById("translate").disabled = false;
-    document.getElementById("spinner").hidden = true;
-  }
+  
 
   function closePage(){
     window.close();
@@ -239,6 +223,23 @@
     delete languagesFrom[selected]
     current.to = selected
     document.getElementById('from').innerHTML = getSelectedFrom()
+  }
+
+  async function translate(){
+    // disable button and show spinner
+    document.getElementById("translate").disabled = true;
+    document.getElementById("spinner").hidden = false;
+    const result = await takeScreenshot();
+    // const result = await window.electron.sendScreenshotSignal();
+    console.log(result);
+    if(result.status !== 200) return;
+    document.getElementById('translated-content').innerHTML = result.data.translatedText;
+    // document.getElementById('hiragana').innerHTML = result.data.f;
+    document.getElementById('text-from-image').innerHTML = current.from === 'ja' ? result.data.furigana : result.data.text
+
+    // enable button and hide spinner
+    document.getElementById("translate").disabled = false;
+    document.getElementById("spinner").hidden = true;
   }
   
 </script>
