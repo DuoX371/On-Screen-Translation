@@ -4,8 +4,8 @@ const fs = require('fs')
 
 // Tesseract and Bing Translate API
 // const imageToText = require('./js/tesseract.js')
-const kanjiToHiragana = require('./js/kToH.js')
-const translate = require('./js/sugoi-translator.js')
+// const kanjiToHiragana = require('./js/kToH.js')
+// const translate = require('./js/sugoi-translator.js')
 const deepLTranslate = require('./js/deepL.js')
 const easyOCR = require('./js/easyOCR.js')
 const kanjiToFuri = require('./js/kuroshiro.js')
@@ -22,9 +22,6 @@ async function createWindow() {
     frame: false,
     resizable: true,
     title: 'Text Capturer Window',
-    webPreferences: {
-      preload: path.join(__dirname, 'preload/main.js')
-    }
   })
   screenWindow.loadFile('pages/index.html')
 }
@@ -58,8 +55,8 @@ app.on('ready', async () => {
   screenWindow.on('restore', () => translateWindow.show())
 
   // Always on top
-  screenWindow.setAlwaysOnTop(true, 'floating', 1)
   translateWindow.setAlwaysOnTop(true, 'floating', 2)
+  screenWindow.setAlwaysOnTop(true, 'floating', 1)
 })
 
 app.on('window-all-closed', () => {

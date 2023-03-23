@@ -1,6 +1,4 @@
 const fetch = require('node-fetch');
-
-
 async function translate(text){
   const data = {
     "content": text,
