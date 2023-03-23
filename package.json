@@ -16,5 +16,8 @@
     "node-fetch": "^2.6.9",
     "puppeteer": "^19.7.5",
     "tesseract.js": "^4.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
