@@ -6,8 +6,8 @@ const Store = require('electron-store')
 const store = new Store()
 
 // Auto update
-const { autoUpdater } = require('electron-updater')
-autoUpdater.checkForUpdatesAndNotify()
+// const { autoUpdater } = require('electron-updater')
+// autoUpdater.checkForUpdatesAndNotify()
 
 // Tesseract and Bing Translate API
 // const imageToText = require('./js/tesseract.js')
@@ -117,7 +117,7 @@ ipcMain.handle('imageToText', async (event, arg) => {
   console.timeEnd('Image to text')
   console.time('Translate')
   const [translatedText, furigana] = await Promise.all([
-    await deepLTranslate(text).catch(err => { return false }),
+    await deepLTranslate(text).catch(err => { console.log(err); return false }),
     await kanjiToFuri(text).then(res => {return res})
   ])
   console.timeEnd('Translate')

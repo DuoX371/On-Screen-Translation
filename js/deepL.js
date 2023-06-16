@@ -19,10 +19,11 @@ async function deepLTranslate(text){
   console.log(config.translate)
   // Navigate to the page
   await page.goto(`https://www.deepl.com/translator#${config.translate.from}/${config.translate.to}/${encodeURIComponent(text)}`);
-  // Wait for the loading indicator to disappear
-  await page.waitForSelector('div[dl-test="loading-indicator"]', {hidden: true});
+  // wait for contents inside data-testid="loading-indicator" to disappear
+  await page.waitForSelector('[data-testid="loading-indicator"]', {hidden: true});
+
   // Get the translated text
-  return await page.evaluate(() => {return document.querySelector('.lmt__textarea.lmt__target_textarea').value});
+  return await page.evaluate(() => {return document.querySelector('[aria-labelledby="translation-results-heading"]').querySelector('span.--l.--r.sentence_highlight').textContent});
 }
 
 module.exports = deepLTranslate;
